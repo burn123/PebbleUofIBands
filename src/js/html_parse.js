@@ -8,10 +8,13 @@
  * Original code by Erik Arvidsson, Mozilla Public License
  * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
  *
+ *
  * Modified by Cody Guldner
  *  - Ignore DOCTYPE tags
+ *  - Removed functions not used (e.g. HTMLtoXML)
  *  - Add HTML to JSON functionality
  *    - Only includes non empty tags
+ *
  *
  * ----------------------------------------------------------------------------
  * License

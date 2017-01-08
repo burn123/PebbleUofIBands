@@ -1,4 +1,5 @@
 /* jshint unused: false */
+/* jshint freeze: false */
 
 var ajax = require('ajax');
 var Settings = require('settings');
@@ -33,10 +34,7 @@ function htmlToJson(htmlData, bandName) {
     var jsonData = HTMLtoJSON(htmlData).html.body, returnData = [{},{}];
     if(bandName == "Wind Symphony") {
         // Go to the element containing the important data
-        jsonData = jsonData["div#layout-type-1"]["div#wrapper"]["div#content"]["div#content-middle"]["div#node-6#node#node-page#clearfix"]
-                           ["div#content#clearfix"]["div#field#field-name-body#field-type-text-with-summary#field-label-hidden"]["div#field-items"]
-                           ["div#field-item#even"]["div#content#clearfix"]["div#field#field-name-body#field-type-text-with-summary#field-label-hidden"]
-                           ["div#field-items"]["div#field-item#even"];
+        jsonData = traverse(jsonData, ["div#layout-type-1","div#wrapper","div#content","div#content-middle","div#node-6#node#node-page#clearfix","div#content#clearfix","div#field#field-name-body#field-type-text-with-summary#field-label-hidden","div#field-items","div#field-item#even","div#content#clearfix","div#field#field-name-body#field-type-text-with-summary#field-label-hidden","div#field-items","div#field-item#even"]);
         
         // The name of the day
         returnData[0].title     = jsonData.p.strong.text.split(",")[0];
@@ -67,7 +65,39 @@ function htmlToJson(htmlData, bandName) {
             dayIndex++;
         });
     }
+    else if(bandName == "Campus Band") {
+        jsonData = jsonData["div#layout-type-1"]["div#wrapper"]["div#content"]["div#content-middle"]["div#node-47#node#node-page#clearfix"]
+                           ["div#content#clearfix"]["div#field#field-name-body#field-type-text-with-summary#field-label-hidden"]["div#field-items"]["div#field-item#even"];
+        console.log(JSON.stringify(jsonData));
+    }
     return returnData;
 }
+
+/**
+ * Goes to the level in the object as specified by the parameter
+ * @param levels - An array of the keys to descend into
+ */
+function traverse(obj, levels) {
+    var retObj = obj;
+    levels.forEach(function(key) {
+        retObj = retObj[key];
+    });
+    return retObj;
+}
+
+/**
+ * Checks if the object has the identifier (either a class or an id)
+ * @param id - The id to search for
+ */
+function hasIdentifier(obj, id) {
+    // Remove unique ID
+    obj = obj.split(".")[0];
+    var identifiers = obj.split("#");
+    
+    for(var i = 1; i < identifiers.length; i++) {
+        if(identifiers[i] == id) return true;
+    }
+    return false;
+};
 
 module.exports = scrape;

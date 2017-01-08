@@ -41,9 +41,7 @@
     "targetPlatforms": [
         "aplite",
         "basalt",
-        "chalk",
-        "diorite",
-        "emery"
+        "chalk"
     ],
     "uuid": "5b2bccdb-c7b1-4c2c-a64b-59a759549ecc",
     "versionCode": 1,

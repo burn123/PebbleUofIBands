@@ -1,13 +1,13 @@
-var scrape = require('./scraping');
 var UI = require('ui');
-//var Vector2 = require('vector2');
+var scrape = require('./scraping');
 
 var ensembleList = new UI.Menu({
     sections: [
         {
             title: 'Bands',
             items: [
-                {title: 'Wind Symphony',dataee:"fun"},
+                {title: 'Wind Symphony'},
+                {title: 'Campus Band'},
                 {title: 'Wind Orchestra'},
                 {title: 'Hindsley'},
                 {title: 'University Band'}
@@ -32,20 +32,25 @@ ensembleList.on('select', function(e) {
         },
         url = "";
     
+    // Switch the url based on the name of the band
     switch(e.item.title) {
         case "Wind Symphony":
-            url = 'http://bands.illinois.edu/content/wind-symphony-rehearsal-schedule';
-            console.log(e.item.dataee);
+            url = "http://bands.illinois.edu/content/wind-symphony-rehearsal-schedule";
+            break;
+        case "Campus Band":
+            url = "http://bands.illinois.edu/content/campus-band-rehearsal-schedule";
             break;
         default:
             break;
     }
-    daysInfo.items(0, [loadingItem]);
+    // Request the information from the website, and retrieve the useful data
     scrape.requestSchedule(url, e.item.title, function(jsonData) {
         console.log('Got response: ' + JSON.stringify(jsonData));
         daysInfo.items(0, jsonData);
     });
 
+    // Show the loading text while waiting for the information to load
+    daysInfo.items(0, [loadingItem]);
     daysInfo.show();
     
     daysInfo.on('select', function(e) {
