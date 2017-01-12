@@ -228,8 +228,8 @@
 				});
 
 				if (handler.start)
-					handler.start(tagName, attrs, unary);
-			}
+                    handler.start(tagName, attrs, unary);
+            }
 		}
 
 		function parseEndTag(tag, tagName) {
@@ -238,7 +238,7 @@
 				var pos = 0;
 
 				// Find the closest opened tag of the same type
-			else
+            else
 				for (var pos = stack.length - 1; pos >= 0; pos--)
 					if (stack[pos] == tagName)
 						break;
@@ -247,11 +247,11 @@
 				// Close all the open elements, up the stack
 				for (var i = stack.length - 1; i >= pos; i--)
 					if (handler.end)
-						handler.end(stack[i]);
+                        handler.end(stack[i]);
 
 				// Remove the open elements from the stack
 				stack.length = pos;
-			}
+            }
 		}
 	};
     
@@ -259,7 +259,9 @@
         // Remove all ending line breaks
         str = str.replace(/[\n\r]\s*/g, "");
         // Remove all script tags
-        str = str.replace(/<script type=\"text\/javascript\">([\s\S]*?)<\/script>/g, '');
+        str = str.replace(/<(no)?script( type=["']text\/javascript["'])?( src=["']([\s\S]*?)["'])?>([\s\S]*?)<\/(no)?script>/g, "");
+        // Remove all style tags
+        str = str.replace(/<style( type=["']text\/css["'])?>([\s\S]*?)<\/style>/g, "");
         var jsonData = "{",
             level = 0,
             levelData = {};
@@ -329,7 +331,7 @@
 
         // Replace any ending commas so it is a valid json object
         //jsonData = jsonData.replace(/\,[\s\n\r]*}/g, '}');
-
+        console.log(jsonData);
         return JSON.parse(jsonData);
     };
 

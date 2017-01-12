@@ -14,7 +14,10 @@ var ensembleList = new UI.Menu({
             ]
         },
         {
-            title: 'Orchestras'
+            title: 'Orchestras',
+            items: [
+                {title: "Symphony Orchestra"}
+            ]
         }
     ]
 });
@@ -29,6 +32,7 @@ ensembleList.on('select', function(e) {
     }),
         loadingItem = {
             title: 'Loading...',
+            invalid: true
         },
         url = "";
     
@@ -40,27 +44,32 @@ ensembleList.on('select', function(e) {
         case "Campus Band":
             url = "http://bands.illinois.edu/content/campus-band-rehearsal-schedule";
             break;
+        case "Symphony Orchestra":
+            url = "https://uisymphonyorchestra.wordpress.com/rehearsal-schedule/";
+            break;
         default:
             break;
     }
+    // Show the loading text while waiting for the information to load
+    daysInfo.items(0, [loadingItem]);
+    
     // Request the information from the website, and retrieve the useful data
     scrape.requestSchedule(url, e.item.title, function(jsonData) {
         console.log('Got response: ' + JSON.stringify(jsonData));
         daysInfo.items(0, jsonData);
     });
-
-    // Show the loading text while waiting for the information to load
-    daysInfo.items(0, [loadingItem]);
     daysInfo.show();
     
     daysInfo.on('select', function(e) {
-        var pieceInfo = new UI.Menu({
-            sections: [{
-                title: e.item.title + " - " + e.item.subtitle,
-                items: e.item.pieceInfo
-            }]
-        });
-        pieceInfo.show();
+        if(e.item.invalid != true) {
+            var pieceInfo = new UI.Menu({
+                sections: [{
+                    title: e.item.title + (e.item.subtitle ? " - " + e.item.subtitle : ""),
+                    items: e.item.pieceInfo
+                }]
+            });
+            pieceInfo.show();
+        }
     });
     //console.log('SELECTED ITEM #' + e.itemIndex + ' of section #' + e.sectionIndex);
     //console.log('The item is titled "' + e.item.title + '"');
