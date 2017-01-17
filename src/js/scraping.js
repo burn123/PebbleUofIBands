@@ -1,23 +1,28 @@
 /* jshint unused: false */
 /* jshint freeze: false */
 
-var ajax = require('ajax');
-var Settings = require('settings');
+var ajax = require('ajax'),
+    Settings = require('settings'),
+    scrape = {};
 require('./html_parse');
-var scrape = {};
-
 /**
  * Requests the given url, returning the html data to the callback
  */
 scrape.requestSchedule = function(bandURL, bandName, callback) {
+    console.log("Is this working?");
+    for (var i = 0; i < localStorage.length + 5; i++){
+        console.log("Key " + i + " is " + localStorage.getItem(localStorage.key(i)));
+    }
+
     if(bandURL == "") callback([createDisplayItem("Not Yet Available", "", true)]);
     ajax({url: bandURL}, function(responseText) {
         var jsonData;
         try {
             jsonData = htmlToJson(responseText, bandName);
+            localStorage.setItem(bandName, JSON.stringify(jsonData));
         }
         catch(err) {
-            throw err;
+            //throw err;
             console.error(JSON.stringify(err, ["message", "arguments", "type", "name"]));
             if(err instanceof SyntaxError)
                 jsonData = [createDisplayItem("Invalid Url", "Contact Developer", true)];
@@ -25,11 +30,21 @@ scrape.requestSchedule = function(bandURL, bandName, callback) {
                 jsonData = [createDisplayItem("Error processing", "Contact Developer", true)];
         }
         callback(jsonData);
+    }, function(responseText) {
+        var storedData = localStorage.getItem(bandName), jsonData;
+        // If there is no internet, try to pull the most recent pulled information
+        if(storedData !== null) {
+            jsonData = JSON.parse(storedData);
+        }
+        else
+            jsonData = [createDisplayItem("No internet", "Try again later", true)];
+            
+        callback(jsonData);
     });
 };
 
 function htmlToJson(htmlData, bandName) {
-    var jsonData = HTMLtoJSON(htmlData).html.body;
+    var jsonData = HTMLtoJSON(htmlData).html.body, returnData;
     switch(bandName) {
         case "Wind Symphony":
             return getWindSymphonyData(jsonData);
@@ -44,7 +59,6 @@ function htmlToJson(htmlData, bandName) {
 
 function getWindSymphonyData(jsonData) {
     var returnData = [{},{}];
-    // Wind Symphony practices twice a week, so make room
     // Go to the element containing the important data
     jsonData = traverseToKey(jsonData, ["div#layout-type-1","div#wrapper","div#content","div#content-middle","div#node-6#node#node-page#clearfix",
                                         "div#content#clearfix","div#field#field-name-body#field-type-text-with-summary#field-label-hidden","div#field-items",
@@ -83,24 +97,34 @@ function getWindSymphonyData(jsonData) {
 }
 
 function getCampusBandData(jsonData) {
-    var returnData = [{}];
-    returnData = [{}];
     jsonData = traverseToKey(jsonData, ["div#layout-type-1","div#wrapper","div#content","div#content-middle","div#node-47#node#node-page#clearfix","div#content#clearfix",
                                         "div#field#field-name-body#field-type-text-with-summary#field-label-hidden","div#field-items","div#field-item#even"]);
-    returnData[0] = createDisplayItem("Monday", "");
+    var returnData = [{}];
+    returnData[0] = createDisplayItem("Monday");
 
     Object.keys(jsonData).forEach(function(key) {
         if(hasIdentifier(key, "MsoNormal")) {
             if(!jsonData[key].span.text) return;
             var pieceText = jsonData[key].span.text.split(/\s?-\s?/);
-            returnData[0].pieceInfo.push(createDisplayItem(pieceText[1], pieceText[0] + " PM"));
+            if(pieceText.length == 1)
+                returnData[0].pieceInfo.push(createDisplayItem(pieceText[0]));
+            else
+                returnData[0].pieceInfo.push(createDisplayItem(pieceText[1], pieceText[0] + " PM"));
         }
     });
     return returnData;
 }
 
 function getSymphonyOrchestraData(jsonData) {
-    console.log(jsonData);
+    jsonData = traverseToKey(jsonData, ["div#page#hfeed#site","div#content#site-content","div#primary#content-area","div#content#site-content",
+                                        "article#post-149#post-149#page#type-page#status-publish#hentry","div#entry-content"]);
+    var returnData = [];
+    console.log(JSON.stringify(jsonData));
+    Object.keys(jsonData).forEach(function(key) {
+       if(key.split(".")[0] == "p" && "text" in jsonData[key])
+           returnData.push(key);
+    });
+    console.log(returnData);
 }
 
 /**
@@ -141,7 +165,7 @@ function hasIdentifier(key, id) {
     // Remove unique ID
     key = key.split(".")[0];
     var identifiers = key.split("#");
-    
+
     for(var i = 1; i < identifiers.length; i++) {
         if(identifiers[i] == id) return true;
     }

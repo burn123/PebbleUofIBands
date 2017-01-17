@@ -4,7 +4,7 @@
         ""
     ],
     "companyName": "cguldne2@illinois.edu",
-    "longName": "U of I Bands",
+    "longName": "U of Illinois Band Schedules",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -37,7 +37,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "U of Illinois Band Schedules",
+    "shortName": "UI Bands",
     "targetPlatforms": [
         "aplite",
         "basalt",

@@ -35,7 +35,7 @@ ensembleList.on('select', function(e) {
             invalid: true
         },
         url = "";
-    
+
     // Switch the url based on the name of the band
     switch(e.item.title) {
         case "Wind Symphony":
@@ -52,14 +52,14 @@ ensembleList.on('select', function(e) {
     }
     // Show the loading text while waiting for the information to load
     daysInfo.items(0, [loadingItem]);
-    
+
     // Request the information from the website, and retrieve the useful data
     scrape.requestSchedule(url, e.item.title, function(jsonData) {
         console.log('Got response: ' + JSON.stringify(jsonData));
         daysInfo.items(0, jsonData);
     });
     daysInfo.show();
-    
+
     daysInfo.on('select', function(e) {
         if(e.item.invalid != true) {
             var pieceInfo = new UI.Menu({
