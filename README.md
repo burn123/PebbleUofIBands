@@ -3,4 +3,4 @@ App for the pebble watch to display the schedule for different bands at the Univ
 
 ----
 ### Credit
-Lyre by Xinh Studio from the Noun Project
+ - Menu Icon: Lyre by Xinh Studio from the Noun Project
