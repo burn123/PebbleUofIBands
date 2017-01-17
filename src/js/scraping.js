@@ -9,10 +9,8 @@ require('./html_parse');
  * Requests the given url, returning the html data to the callback
  */
 scrape.requestSchedule = function(bandURL, bandName, callback) {
-    console.log("Is this working?");
-    for (var i = 0; i < localStorage.length + 5; i++){
-        console.log("Key " + i + " is " + localStorage.getItem(localStorage.key(i)));
-    }
+    /*for (var i = 0; i < localStorage.length + 5; i++)
+        console.log("Key " + i + " is " + localStorage.getItem(localStorage.key(i)));*/
 
     if(bandURL == "") callback([createDisplayItem("Not Yet Available", "", true)]);
     ajax({url: bandURL}, function(responseText) {
@@ -44,7 +42,7 @@ scrape.requestSchedule = function(bandURL, bandName, callback) {
 };
 
 function htmlToJson(htmlData, bandName) {
-    var jsonData = HTMLtoJSON(htmlData).html.body, returnData;
+    var jsonData = HTMLtoJSON(htmlData).html.body;
     switch(bandName) {
         case "Wind Symphony":
             return getWindSymphonyData(jsonData);
