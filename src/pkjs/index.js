@@ -1,5 +1,6 @@
-var UI = require('ui');
-var scrape = require('./scraping');
+require('pebblejs');
+var UI = require('pebblejs/ui'),
+    scrape = require('./scrape');
 
 var ensembleList = new UI.Menu({
     sections: [

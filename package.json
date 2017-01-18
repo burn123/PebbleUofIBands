@@ -1,0 +1,35 @@
+{
+    "author": "cguldne2@illinois.edu",
+    "dependencies": {
+        "pebblejs": "1.0.0"
+    },
+    "keywords": [],
+    "name": "ui-bands",
+    "pebble": {
+        "displayName": "UIUC Band Schedules",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/menu_icon.png",
+                    "name": "MENU_ICON",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk"
+        ],
+        "uuid": "5b2bccdb-c7b1-4c2c-a64b-59a759549ecc",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}

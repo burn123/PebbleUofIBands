@@ -1,10 +1,11 @@
 /* jshint unused: false */
 /* jshint freeze: false */
 
-var ajax = require('ajax'),
-    Settings = require('settings'),
-    scrape = {};
+require('pebblejs');
 require('./html_parse');
+var ajax = require('pebblejs/lib/ajax'),
+    scrape = {};
+
 /**
  * Requests the given url, returning the html data to the callback
  */
@@ -127,7 +128,6 @@ function getSymphonyOrchestraData(jsonData) {
 
 /**
  * Creates an item that is used in the pebble UI menu
- * @param pieceInfo - Contains the pieces that are being played that day
  * @param invalid - Whether the display item is valid (if it should be allowed to be clicked on), e.g. for errors
  */
 function createDisplayItem(title, subtitle, invalid) {
