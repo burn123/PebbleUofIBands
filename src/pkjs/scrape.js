@@ -21,6 +21,7 @@ scrape.requestSchedule = function(bandURL, bandName, callback) {
             localStorage.setItem(bandName, JSON.stringify(jsonData));
         }
         catch(err) {
+            throw err;
             console.error(JSON.stringify(err, ["message", "arguments", "type", "name"]));
             if(err instanceof SyntaxError)
                 jsonData = [createDisplayItem("Invalid Url", "Contact Developer", true)];
@@ -59,8 +60,8 @@ function htmlToJson(htmlData, bandName) {
     }*/
     if(bandName == "Wind Symphony") return getWindSymphonyData(jsonData);
     else if(bandName == "Campus Band") return getCampusBandData(jsonData);
-    else if(bandName == "Symphony Orchestra") getSymphonyOrchestraData(jsonData);
-    else if(bandName == "Illini Strings") getIlliniStringsData(jsonData);
+    else if(bandName == "Symphony Orchestra") return getSymphonyOrchestraData(jsonData);
+    else if(bandName == "Illini Strings") return getIlliniStringsData(jsonData);
 }
 
 function getWindSymphonyData(jsonData) {
@@ -135,8 +136,8 @@ function getSymphonyOrchestraData(jsonData) {
            /*var dayInfo = jsonData[key].text.split(/&#8211;/)[0].split(" ");
            var day1Date = new Date(day1[0] + day1[1] + " " + new Date().getFullYear());*/
            var dayInfo = jsonData[key].text.split(" || "),
-               day1Date = new Date(dayInfo[0] + " " + new Date().getFullYear());
-           returnData[dayIndex] = createDisplayItem(day1Date.getDayName(), day1Date.getMonthName() + " " + day1Date.getDate());
+               dayDate = new Date(dayInfo[0] + " " + new Date().getFullYear());
+           returnData[dayIndex] = createDisplayItem(dayDate.getDayName(), dayDate.getMonthName() + " " + dayDate.getDate());
            returnData[dayIndex++].pieceInfo.push({title: dayInfo[1]});
        }
     });
@@ -144,7 +145,21 @@ function getSymphonyOrchestraData(jsonData) {
 }
 
 function getIlliniStringsData(jsonData) {
-    console.log(jsonData);
+    jsonData = traverseToKey(jsonData, ["div#wrapper","div#container","div#content", 
+                                        "div#post-101#post-101#page#type-page#status-publish#hentry#author-clmay2illinois-edu","div#entry-content"]);
+    var returnData = [{}],
+        dayInfo = jsonData.p.span.strong.text.split(/&#8211;/)[1],
+        dayDate = new Date(dayInfo);
+    returnData[0] = createDisplayItem(dayDate.getDayName(), dayDate.getMonthName() + " " + dayDate.getDate());
+    
+    jsonData = traverseToKey(jsonData, ["ul"]);
+    Object.keys(jsonData).forEach(function(key) {
+       if(key.split(".")[0] == "li" && "span" in jsonData[key]) {
+           var pieceText = jsonData[key].span.text.split(/\s?&#8211;\s?/);
+           returnData[0].pieceInfo.push(createDisplayItem(pieceText[1], pieceText[0] + " PM"));
+       }
+    });
+    return returnData;
 }
 
 /**
