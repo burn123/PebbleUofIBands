@@ -262,6 +262,8 @@
         str = str.replace(/<(no)?script( type=["']text\/javascript["'])?( src=["']([\s\S]*?)["'])?>([\s\S]*?)<\/(no)?script>/g, "");
         // Remove all style tags
         str = str.replace(/<style( type=["']text\/css["'])?>([\s\S]*?)<\/style>/g, "");
+        // Replace all <br> tags with || so that all the text is included
+        str = str.replace(/<br( \/)?>/g, " || ");
         var jsonData = "{",
             level = 0,
             levelData = {};
@@ -328,9 +330,6 @@
         });
         jsonData += "}";
         if(level !== 0) console.error("Attributes offset by: " + level);
-
-        // Replace any ending commas so it is a valid json object
-        //jsonData = jsonData.replace(/\,[\s\n\r]*}/g, '}');
         console.log(jsonData);
         return JSON.parse(jsonData);
     };

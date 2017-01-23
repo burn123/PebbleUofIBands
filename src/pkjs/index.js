@@ -9,15 +9,16 @@ var ensembleList = new UI.Menu({
             items: [
                 {title: 'Wind Symphony'},
                 {title: 'Campus Band'},
-                {title: 'Wind Orchestra'},
-                {title: 'Hindsley'},
-                {title: 'University Band'}
+                //{title: 'Wind Orchestra'},
+                //{title: 'Hindsley'},
+                //{title: 'University Band'}
             ]
         },
         {
             title: 'Orchestras',
             items: [
-                {title: "Symphony Orchestra"}
+                {title: "Symphony Orchestra"},
+                {title: "Illini Strings"}
             ]
         }
     ]
@@ -38,7 +39,7 @@ ensembleList.on('select', function(e) {
         url = "";
 
     // Switch the url based on the name of the band
-    switch(e.item.title) {
+    /*switch(e.item.title) {
         case "Wind Symphony":
             url = "http://bands.illinois.edu/content/wind-symphony-rehearsal-schedule";
             break;
@@ -48,9 +49,16 @@ ensembleList.on('select', function(e) {
         case "Symphony Orchestra":
             url = "https://uisymphonyorchestra.wordpress.com/rehearsal-schedule/";
             break;
+        case "Illini Strings":
+            url = "http://publish.illinois.edu/illinistrings/rehearsal-scheduleannouncements/";
+            break;
         default:
             break;
-    }
+    }*/
+    if(e.item.title == "Wind Symphony") url = "http://bands.illinois.edu/content/wind-symphony-rehearsal-schedule";
+    else if(e.item.title == "Campus Band") url = "http://bands.illinois.edu/content/campus-band-rehearsal-schedule";
+    else if(e.item.title == "Symphony Orchestra") url = "https://uisymphonyorchestra.wordpress.com/rehearsal-schedule/";
+    else if(e.item.title == "Illini Strings") url = "http://publish.illinois.edu/illinistrings/rehearsal-scheduleannouncements/";
     // Show the loading text while waiting for the information to load
     daysInfo.items(0, [loadingItem]);
 
