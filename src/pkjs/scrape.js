@@ -48,20 +48,10 @@ scrape.requestSchedule = function(bandURL, bandName, callback) {
  */
 function htmlToJson(htmlData, bandName) {
     var jsonData = HTMLtoJSON(htmlData).html.body;
-    /*switch(bandName) {
-        case "Wind Symphony":
-            return getWindSymphonyData(jsonData);
-        case "Campus Band":
-            return getCampusBandData(jsonData);
-        case "Symphony Orchestra":
-            return getSymphonyOrchestraData(jsonData);
-        default:
-            return;
-    }*/
-    if(bandName == "Wind Symphony") return getWindSymphonyData(jsonData);
-    else if(bandName == "Campus Band") return getCampusBandData(jsonData);
+    if(bandName == "Wind Symphony")           return getWindSymphonyData(jsonData);
+    else if(bandName == "Campus Band")        return getCampusBandData(jsonData);
     else if(bandName == "Symphony Orchestra") return getSymphonyOrchestraData(jsonData);
-    else if(bandName == "Illini Strings") return getIlliniStringsData(jsonData);
+    else if(bandName == "Illini Strings")     return getIlliniStringsData(jsonData);
 }
 
 function getWindSymphonyData(jsonData) {
@@ -71,15 +61,15 @@ function getWindSymphonyData(jsonData) {
                                         "div#content#clearfix","div#field#field-name-body#field-type-text-with-summary#field-label-hidden","div#field-items",
                                         "div#field-item#even","div#content#clearfix","div#field#field-name-body#field-type-text-with-summary#field-label-hidden",
                                         "div#field-items","div#field-item#even"]);
-    // Travel to where the data for each day is stored is stored
-    var monData = traverseToKey(jsonData, ["p","strong","text"]).split(",");
-    // What day of the week and the date
-    returnData[0] = createDisplayItem(monData[0], monData[1].split("|")[0]);
+    // Travel to where the data for each day is storedjsonData.p.strong.text
+    if(traverseToKey(jsonData, ["p","strong","text"])) {
+        var monDate = new Date(jsonData.p.strong.text.split(/\s?\|\s?/)[0] + " " + new Date().getFullYear());
+        returnData[0] = createDisplayItem(monDate);
+    }
 
-    var wedData = traverseToKey(jsonData, ["p.1","strong","text"]);
-    if(wedData) {
-        wedData = wedData.split(",");
-        returnData[1] = createDisplayItem(wedData[0], wedData[1].split("|")[0]);
+    if(traverseToKey(jsonData, ["p.1","strong","text"])) {
+        var wedDate = new Date(jsonData["p.1"].strong.text.split(/\s?\|\s?/)[0] + " " + new Date().getFullYear());
+        returnData[1] = createDisplayItem(wedDate);
     }
 
     var dayIndex = 0;
@@ -107,10 +97,10 @@ function getCampusBandData(jsonData) {
     jsonData = traverseToKey(jsonData, ["div#layout-type-1","div#wrapper","div#content","div#content-middle","div#node-47#node#node-page#clearfix","div#content#clearfix",
                                         "div#field#field-name-body#field-type-text-with-summary#field-label-hidden","div#field-items","div#field-item#even"]);
     var returnData = [{}],
-        d = new Date();
+        dayInfo = new Date();
     // Get the date of the next Monday
-    d.setDate(d.getDate() + ((7-d.getDay())%7+1) % 7);
-    returnData[0] = createDisplayItem(d.getDayName(), d.getMonthName() + " " + d.getDate());
+    dayInfo.setDate(dayInfo.getDate() + ((7-dayInfo.getDay())%7+1) % 7);
+    returnData[0] = createDisplayItem(dayInfo);
 
     Object.keys(jsonData).forEach(function(key) {
         if(hasIdentifier(key, "MsoNormal")) {
@@ -137,7 +127,7 @@ function getSymphonyOrchestraData(jsonData) {
            var day1Date = new Date(day1[0] + day1[1] + " " + new Date().getFullYear());*/
            var dayInfo = jsonData[key].text.split(" || "),
                dayDate = new Date(dayInfo[0] + " " + new Date().getFullYear());
-           returnData[dayIndex] = createDisplayItem(dayDate.getDayName(), dayDate.getMonthName() + " " + dayDate.getDate());
+           returnData[dayIndex] = createDisplayItem(dayDate);
            returnData[dayIndex++].pieceInfo.push({title: dayInfo[1]});
        }
     });
@@ -148,9 +138,9 @@ function getIlliniStringsData(jsonData) {
     jsonData = traverseToKey(jsonData, ["div#wrapper","div#container","div#content", 
                                         "div#post-101#post-101#page#type-page#status-publish#hentry#author-clmay2illinois-edu","div#entry-content"]);
     var returnData = [{}],
-        dayInfo = jsonData.p.span.strong.text.split(/&#8211;/)[1],
+        dayInfo = jsonData.p.span.strong.text.split(/\s?&#8211;\s?/)[1],
         dayDate = new Date(dayInfo);
-    returnData[0] = createDisplayItem(dayDate.getDayName(), dayDate.getMonthName() + " " + dayDate.getDate());
+    returnData[0] = createDisplayItem(dayDate);
     
     jsonData = traverseToKey(jsonData, ["ul"]);
     Object.keys(jsonData).forEach(function(key) {
@@ -167,6 +157,9 @@ function getIlliniStringsData(jsonData) {
  * @param invalid - Whether the display item is valid (if it should be allowed to be clicked on), e.g. for errors
  */
 function createDisplayItem(title, subtitle, invalid) {
+    // If the argument is a date object
+    if(title instanceof Date)
+        return createDisplayItem(title.getDayName(), title.getMonthName() + " " + title.getDate());
     return {
         title    : title,
         subtitle : subtitle || "",
